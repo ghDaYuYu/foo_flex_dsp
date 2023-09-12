@@ -1,0 +1,166 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Deutsch (Deutschland) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_SCANRESULT DIALOGEX 0, 0, 469, 247
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Dynamic DSP: ReplayGain Scanner"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Update File Tags",IDOK,341,229,68,14
+    PUSHBUTTON      "Cancel",IDCANCEL,413,229,50,14
+    CONTROL         "List1",IDC_LIST1,"SysListView32",LVS_REPORT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,4,4,459,220
+    LTEXT           "",IDC_STATIC1,4,235,233,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_SCANRESULT, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 463
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 243
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Deutsch (Deutschland) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Englisch (USA) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_PERTRACKDSP DIALOGEX 0, 0, 377, 338
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dynamic DSP"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "OK",IDOK,261,317,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,319,317,50,14
+    EDITTEXT        IDC_TITLEFORMATEDIT,7,19,362,75,ES_MULTILINE | ES_AUTOHSCROLL | ES_WANTRETURN
+    LISTBOX         IDC_CHAINSLIST,7,149,212,162,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Titleformat script (evaluate to one of the chains below to activate that chain)",IDC_STATIC,7,7,248,8
+    LTEXT           "Chains (doubleclick to configure)",IDC_STATIC,7,137,106,8
+    LTEXT           "Preview (script applied to current playback)",IDC_STATIC,7,99,140,8
+    PUSHBUTTON      "Refresh preview",IDC_REFRESHPREVIEWBUTTON,305,110,64,14
+    PUSHBUTTON      "Remove selected",IDC_REMOVECHAINBUTTON,155,132,65,14,WS_DISABLED
+    EDITTEXT        IDC_PREVIEW,7,110,292,14,ES_AUTOHSCROLL | ES_READONLY
+    DEFPUSHBUTTON   "New chain",IDC_ADDCHAINBUTTON,121,317,41,14,WS_DISABLED
+    EDITTEXT        IDC_NEWCHAINEDIT,7,317,111,14,ES_AUTOHSCROLL
+    GROUPBOX        "Additional settings",IDC_STATIC,228,133,141,178
+    CONTROL         "Enable evaluation to multiple chains\n(separated by semicolon)",IDC_CHECKMulti,
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,236,146,126,21
+    DEFPUSHBUTTON   "Copy selected",IDC_COPYBUTTON,165,317,54,14,WS_DISABLED
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_PERTRACKDSP, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 369
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 331
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_PERTRACKDSP AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // Englisch (USA) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
