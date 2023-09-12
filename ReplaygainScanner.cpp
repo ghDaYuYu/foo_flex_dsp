@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "helpers/input_helpers.h"
 #include "ReplayGainResultPopup.h"
 #include "ReplayGainScanner.h"
 

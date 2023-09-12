@@ -1,3 +1,5 @@
+#include "stdafx.h"
+#include "helpers\atl-misc.h"
 #include "ReplayGainResultPopup.h"
 
 bool CReplayGainResultPopup::rg_apply_filter::apply_filter(metadb_handle_ptr p_location, t_filestats p_stats, file_info & p_info) {

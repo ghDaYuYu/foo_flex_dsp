@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 #include "resource.h"
-
+#include "atlframe.h"
 
 struct ReplayGainResult {
   metadb_handle_ptr metadb;

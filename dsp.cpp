@@ -2,9 +2,12 @@
 #include "resource.h"
 #include <wchar.h>
 #include <functional>
+#include <filesystem>
 #include <mmdeviceapi.h>
 //#include <endpointvolume.h>
+#include "libPPUI/wtl-pp.h"
 #include <Functiondiscoverykeys_devpkey.h>
+#include "helpers/DarkMode.h"
 
 
 #define MAX_PRESENT_NAME_LEN 100
@@ -225,6 +228,10 @@ class MyDSP : public dsp_impl_base {
   }
 
   static bool g_get_default_preset(dsp_preset & p_out) {
+    if (import_preset(p_out)) {
+      return true;
+    }    
+
     ChainsMap chainsMap;
     pfc::string8 tf("[%trackdsp%]");
     make_preset(chainsMap, tf, DSP_DEFAULT_SEPARATOR, p_out);
@@ -240,7 +247,7 @@ class MyDSP : public dsp_impl_base {
   }
 
   static void make_preset(const ChainsMap &cMap, const pfc::string8& tfString, char separator, dsp_preset &out) {
-    size_t count = cMap.get_count();
+    uint32_t count = static_cast<uint32_t>(cMap.get_count());
     dsp_preset_builder builder;
     builder << tfString;
     builder << count;
@@ -251,18 +258,82 @@ class MyDSP : public dsp_impl_base {
     builder.finish(g_get_guid(), out);
   }
 
+  static pfc::string8 genFilePath() {
+    static std::string path;
+    if (path.empty()) {
+      path = std::string(core_api::get_profile_path()).append("\\configuration\\").append(core_api::get_my_file_name()).append(".exp").substr(7, std::string::npos);
+    }
+    return pfc::string8(path.c_str());
+  }
+
+  static bool import_preset(ChainsMap* cMap, pfc::string8* tfString, char* separator, dsp_preset& out/*const dsp_preset& in*/) {
+    try {
+      file_ptr l_file;
+      std::error_code ec;
+      std::filesystem::path os_file_name = std::filesystem::u8path(genFilePath().c_str());
+
+      if (std::filesystem::exists(os_file_name), ec) {
+        
+        filesystem::g_open_read(l_file, os_file_name.u8string().c_str(), fb2k::noAbort);
+
+        dsp_preset_impl tmpDstPresetImp;
+        tmpDstPresetImp.contents_from_stream(static_cast<stream_reader*>(l_file.get_ptr()), fb2k::noAbort);
+
+
+        out.set_owner(g_get_guid());
+        out.set_data(tmpDstPresetImp.get_data(), tmpDstPresetImp.get_data_size());
+        l_file.release();
+
+        std::filesystem::path os_file_name_bak = os_file_name;
+        os_file_name_bak.replace_extension("exp.bak");
+        
+        if (std::filesystem::exists(os_file_name_bak)) {
+          std::filesystem::remove(os_file_name_bak, ec);
+        }
+        std::filesystem::rename(os_file_name, os_file_name_bak, ec);
+
+        return true;
+      }
+    }
+    catch (exception_io_data) {
+    }
+    return false;
+  }
+
+  static void export_preset(const ChainsMap& cMap, const pfc::string8& tfString, char separator, dsp_preset& out) {
+
+    file_ptr l_file;
+    std::filesystem::path os_file_name = std::filesystem::u8path(genFilePath().c_str());
+    filesystem::g_open_write_new(l_file, os_file_name.u8string().c_str(), fb2k::noAbort);
+
+    uint32_t count = static_cast<uint32_t>(cMap.get_count());
+    stream_writer_formatter<> pbuilder(*(static_cast<stream_writer*>(l_file.get_ptr())), fb2k::noAbort);
+    out.set_data(nullptr, 0);
+
+    dsp_preset_builder builder;
+    builder << tfString;
+    builder << count;
+
+    SerializeChains t;
+    t.builder = &builder;
+    cMap.enumerate(std::bind(&SerializeChains::Traverse, t, _1, _2));
+
+    builder << separator;
+    builder.finish(g_get_guid(), out);
+  }
+
   static void parse_preset(ChainsMap *cMap, pfc::string8 *tfString, char* separator, const dsp_preset &in) {
     try {
-      int count = 0;
+      uint32_t count = 0;
       dsp_preset_parser parser(in);
       parser >> (*tfString);
       parser >> count;
-      for (int i = 0; i < count; i++) {
+      for (size_t i = 0; i < count; i++) {
         pfc::string8 g;
         parser >> g;
         dsp_chain_config_impl impl;
         parser >> impl;
-        dsp_chain_config_impl *implref = new dsp_chain_config_impl(impl);
+        dsp_chain_config_impl* implref = new dsp_chain_config_impl(impl);
         cMap->set(g, implref);
       }
       if (parser.get_remaining() > 0) {
@@ -401,6 +472,7 @@ class CMyDSPPopup : public CDialogImpl < CMyDSPPopup > {
     t.chainsList = &chainsList;
     chainsMap.enumerate(std::bind(&FillChainsListBox::Traverse, t, _1, _2));
     updatePreview();
+    m_dark.AddDialogWithControls(*this);
     return TRUE;
   }
 
@@ -423,6 +495,10 @@ class CMyDSPPopup : public CDialogImpl < CMyDSPPopup > {
     dsp_preset_impl preset;
     MyDSP::make_preset(chainsMap, tfString, separator, preset);
     m_callback.on_preset_changed(preset);
+
+    if (uButton_GetCheck(m_hWnd, IDC_CHECK_EXPORT_SETUP)) {
+      MyDSP::export_preset(chainsMap, tfString, separator, preset);
+    }
     
     MyDSP::FreeMemory t;
     chainsMap.enumerate(std::bind(&MyDSP::FreeMemory::Traverse, t, _1, _2));
@@ -510,7 +586,7 @@ class CMyDSPPopup : public CDialogImpl < CMyDSPPopup > {
       /* m_mthelper.add(this, name); */
       // Call dsp configuration in current thread (bugfix for fb 1.6)
       dsp_chain_config_impl *chain = chainsMap[ConvertWchar(str)];
-      static_api_ptr_t<dsp_config_manager>().get_ptr()->configure_popup(*chain, NULL, name.toString());
+      static_api_ptr_t<dsp_config_manager>().get_ptr()->configure_popup(*chain, m_hWnd, name.toString());
     }
   }
 
@@ -522,6 +598,8 @@ class CMyDSPPopup : public CDialogImpl < CMyDSPPopup > {
   CEdit newChainEdit;
   CEdit titleformatEdit;
   CEdit previewEdit;
+  fb2k::CDarkModeHooks m_dark;
+
   pfc::string8 tfString;
   ChainsMap chainsMap;
   char separator;
