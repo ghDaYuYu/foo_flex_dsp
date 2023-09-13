@@ -320,6 +320,10 @@ class MyDSP : public dsp_impl_base {
 
     builder << separator;
     builder.finish(g_get_guid(), out);
+    out.contents_to_stream(static_cast<stream_writer*>(l_file.get_ptr()), fb2k::noAbort);
+
+    l_file.get_ptr()->flushFileBuffers(fb2k::noAbort);
+    l_file.release();
   }
 
   static void parse_preset(ChainsMap *cMap, pfc::string8 *tfString, char* separator, const dsp_preset &in) {
