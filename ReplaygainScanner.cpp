@@ -3,8 +3,8 @@
 #include "ReplayGainResultPopup.h"
 #include "ReplayGainScanner.h"
 
-static advconfig_branch_factory dynamicdsp_branch("Dynamic DSP", guid_dynamicdsp_branch, advconfig_branch::guid_branch_tools, 0);
-static advconfig_branch_factory replaygain_branch("ReplayGain Scanner", guid_replaygain_branch, guid_dynamicdsp_branch, 0);
+static advconfig_branch_factory dynamicdsp_branch("Flex DSP", guid_flexdsp_branch, advconfig_branch::guid_branch_tools, 0);
+static advconfig_branch_factory replaygain_branch("ReplayGain Scanner", guid_replaygain_branch, guid_flexdsp_branch, 0);
 static advconfig_string_factory cfg_album_pattern("Album grouping pattern", guid_cfg_album_pattern, guid_replaygain_branch, 0, "%album artist% | %date% | %album%");
 static advconfig_integer_factory cfg_thread_priority("Thread priority (1-7)", guid_cfg_thread_priority, guid_replaygain_branch, 0, 2, 1, 7);
 
@@ -155,7 +155,7 @@ void ReplayGainScanProcess::run(threaded_process_status & p_status, abort_callba
 void ReplayGainScanProcess::on_done(HWND p_wnd, bool p_was_aborted) {
   if (!p_was_aborted) {
     if (!m_failMsg.is_empty()) {
-      popup_message::g_complain("Dynamic DSP: ReplayGain Scanner - failure", m_failMsg);
+      popup_message::g_complain("Flex DSP: ReplayGain Scanner - failure", m_failMsg);
     } else {
       DWORD high = end_time.dwHighDateTime - start_time.dwHighDateTime;
       DWORD low = end_time.dwLowDateTime - start_time.dwLowDateTime;
@@ -184,9 +184,9 @@ void ReplayGainScanProcess::RunReplaygainScanner(metadb_handle_list_cref data, S
       cb,
       threaded_process::flag_show_progress_dual | threaded_process::flag_show_item | threaded_process::flag_show_abort,
       core_api::get_main_window(),
-      "Dynamic DSP: ReplayGain Scanner");
+      "Flex DSP: ReplayGain Scanner");
   } catch (std::exception const & e) {
-    popup_message::g_complain("Could not start Dynamic DSP: ReplayGain Scanner process", e);
+    popup_message::g_complain("Could not start Flex DSP: ReplayGain Scanner process", e);
   }
 }
 

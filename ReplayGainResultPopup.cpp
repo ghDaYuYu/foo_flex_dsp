@@ -102,7 +102,7 @@ BOOL CReplayGainResultPopup::OnInitDialog(CWindow, LPARAM) {
 
   if (error_tracks) {
     if (error_tracks == total_tracks) GetDlgItem(IDOK).EnableWindow(FALSE);
-    popup_message::g_show(pfc::string_formatter() << pfc::format_int(error_tracks) << " out of " << pfc::format_int(total_tracks) << " items could not be processed.", "Dynamic DSP: ReplayGain Scanner - warning", popup_message::icon_error);
+    popup_message::g_show(pfc::string_formatter() << pfc::format_int(error_tracks) << " out of " << pfc::format_int(total_tracks) << " items could not be processed.", "Flex DSP: ReplayGain Scanner - warning", popup_message::icon_error);
   }
 
   return TRUE;

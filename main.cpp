@@ -1,8 +1,9 @@
 #include "stdafx.h"
+#include "version.h"
 
 const char* s =
 #include "readme.txt"
 ;
 
-DECLARE_COMPONENT_VERSION("Dynamic DSP","2.1.1.3", s);
-VALIDATE_COMPONENT_FILENAME("foo_dynamicdsp.dll");
+DECLARE_COMPONENT_VERSION(PLUGIN_NAME, FOO_COMPONENT_VERSION, s);
+VALIDATE_COMPONENT_FILENAME(COMPONENT_NAME_DLL);

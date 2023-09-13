@@ -1,7 +1,12 @@
 #include "stdafx.h"
+//#include "atlframe.h"
 #include "ReplayGainScanner.h"
 
-static const GUID guid_mygroup = { 0x47da0baf, 0xe51d, 0x4923, { 0xa9, 0x2a, 0x22, 0x21, 0x3f, 0x4f, 0x30, 0x70 } };
+#define DESC_SCAN_PER_FILE "Scan per-file track gain (Flex DSP)"
+#define DESC_SCAN_SELECTION_ALBUM "Scan selection as album (by tags) (Flex DSP)"
+#define DESC_SCAN_SELECTION_SINGLE_ALBUM "Scan selection as a single album (Flex DSP)"
+
+static const GUID guid_mygroup = { 0x47914b03, 0x3f7, 0x4129, { 0xb1, 0x6e, 0xb3, 0xe3, 0xf0, 0x88, 0x45, 0x5 } };
 
 // Switch to contextmenu_group_factory to embed your commands in the root menu but separated from other commands.
 static contextmenu_group_factory g_mygroup(guid_mygroup, contextmenu_groups::replaygain, 0);
@@ -23,9 +28,9 @@ public:
 
   void get_item_name(unsigned p_index, pfc::string_base & p_out) {
     switch (p_index) {
-    case cmd_scanPerTrack: p_out = "Scan per-file track gain (plus DSP)"; break;
-    case cmd_scanAlbumByTag: p_out = "Scan selection as album (by tags) (plus DSP)"; break;
-    case cmd_scanAsSingleAlbum: p_out = "Scan selection as a single album (plus DSP)"; break;
+    case cmd_scanPerTrack: p_out = DESC_SCAN_PER_FILE; break;
+    case cmd_scanAlbumByTag: p_out = DESC_SCAN_SELECTION_ALBUM; break;
+    case cmd_scanAsSingleAlbum: p_out = DESC_SCAN_SELECTION_SINGLE_ALBUM; break;
     default: uBugCheck(); // should never happen unless somebody called us with invalid parameters - bail
     }
   }
@@ -47,9 +52,9 @@ public:
   }
 
   GUID get_item_guid(unsigned p_index) {
-    static const GUID guid_scanPerTrack = { 0x72c65879, 0x7fc5, 0x4170, { 0x85, 0x1c, 0x6d, 0x83, 0x34, 0xc4, 0x9f, 0x33 } };
-    static const GUID guid_scanAlbumByTag = { 0x04bc319c, 0x2520, 0x47e4, { 0x9b, 0x56, 0x64, 0xda, 0xc5, 0x10, 0xb4, 0x4c } };
-    static const GUID guid_scanAsSingleAlbum = { 0x5e205948, 0x7178, 0x4202, { 0x95, 0x2e, 0x2c, 0x67, 0xec, 0x72, 0xe2, 0xae } };
+    static const GUID guid_scanPerTrack = { 0x9996af51, 0xce4e, 0x4cf2, { 0xa7, 0xff, 0xeb, 0xeb, 0xe, 0x3c, 0xb3, 0x6f } };
+    static const GUID guid_scanAlbumByTag = { 0xb05ceaf9, 0xaf64, 0x4bcf, { 0xb9, 0xd0, 0x2e, 0xfc, 0x3e, 0x20, 0x7f, 0xa8 } };
+    static const GUID guid_scanAsSingleAlbum = { 0x1f8b741c, 0x23e5, 0x4b9a, { 0xac, 0xc6, 0xb1, 0x23, 0x87, 0xb6, 0x7, 0xcc } };
     switch (p_index) {
     case cmd_scanPerTrack: return guid_scanPerTrack;
     case cmd_scanAlbumByTag: return guid_scanAlbumByTag;
@@ -60,9 +65,9 @@ public:
 
   bool get_item_description(unsigned p_index, pfc::string_base & p_out) {
     switch (p_index) {
-    case cmd_scanPerTrack: p_out = "Scan per-file track gain (plus DSP)"; break;
-    case cmd_scanAlbumByTag: p_out = "Scan selection as album (by tags) (plus DSP)"; break;
-    case cmd_scanAsSingleAlbum: p_out = "Scan selection as a single album (plus DSP)"; break;
+    case cmd_scanPerTrack: p_out = DESC_SCAN_PER_FILE; break;
+    case cmd_scanAlbumByTag: p_out = DESC_SCAN_SELECTION_ALBUM; break;
+    case cmd_scanAsSingleAlbum: p_out = DESC_SCAN_SELECTION_SINGLE_ALBUM; break;
     default: uBugCheck(); // should never happen unless somebody called us with invalid parameters - bail
     }
   }

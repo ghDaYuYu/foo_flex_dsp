@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>foo_dynamicdsp</ProjectName>
+    <ProjectName>foo_flex_dsp</ProjectName>
     <ProjectGuid>{6ECFE126-D7F8-4907-B0E2-4C58E2D5DC91}</ProjectGuid>
     <RootNamespace>foo_input_raw</RootNamespace>
     <Keyword>Win32Proj</Keyword>
@@ -232,7 +232,8 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="DynamicDSP.rc" />
+    <ResourceCompile Include="foo_flex_dsp.rc" />
+    <ResourceCompile Include="foo_flex_dsp_ver.rc" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="readme.txt" />

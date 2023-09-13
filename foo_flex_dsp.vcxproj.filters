@@ -41,12 +41,18 @@
     <ClInclude Include="ReplayGainScanner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>Resource Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="DynamicDSP.rc">
+    <ResourceCompile Include="foo_flex_dsp.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="foo_flex_dsp_ver.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

@@ -13,6 +13,7 @@
 #define MAX_PRESENT_NAME_LEN 100
 #define MAX_PATTERN_LEN 1024
 #define DSP_DEFAULT_SEPARATOR ';'
+#define DSP_DEFAULT_TF "[%track_flexdsp%]"
 
 typedef pfc::map_t<pfc::string8, dsp_chain_config_impl *, pfc::string::comparatorCaseInsensitive> ChainsMap;
 
@@ -105,12 +106,12 @@ class MyDSP : public dsp_impl_base {
 
   static GUID g_get_guid() {
     //This is our GUID. Generate your own one when reusing this code.
-    static const GUID guid = { 0x25ac436d, 0x337e, 0x45d5, { 0x92, 0x4a, 0x19, 0xb3, 0x13, 0x52, 0x06, 0x0b } };
+    static const GUID guid = { 0x6f5ef674, 0x725a, 0x408d, { 0x94, 0x5b, 0x11, 0x90, 0x6f, 0xc5, 0xcd, 0x99 } };
     return guid;
   }
 
   static void g_get_name(pfc::string_base & p_out) {
-    p_out = "Dynamic DSP";
+    p_out = "Flex DSP";
   }
 
   void addChain(const dsp_chain_config_impl *chain) {
@@ -233,7 +234,7 @@ class MyDSP : public dsp_impl_base {
     }    
 
     ChainsMap chainsMap;
-    pfc::string8 tf("[%trackdsp%]");
+    pfc::string8 tf(DSP_DEFAULT_TF);
     make_preset(chainsMap, tf, DSP_DEFAULT_SEPARATOR, p_out);
     return true;
   }
@@ -272,8 +273,7 @@ class MyDSP : public dsp_impl_base {
       std::error_code ec;
       std::filesystem::path os_file_name = std::filesystem::u8path(genFilePath().c_str());
 
-      if (std::filesystem::exists(os_file_name), ec) {
-        
+      if (std::filesystem::exists(os_file_name, ec)) {
         filesystem::g_open_read(l_file, os_file_name.u8string().c_str(), fb2k::noAbort);
 
         dsp_preset_impl tmpDstPresetImp;

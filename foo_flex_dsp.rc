@@ -16,52 +16,6 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// German (Germany) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
-LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
-#pragma code_page(1252)
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_SCANRESULT DIALOGEX 0, 0, 469, 247
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
-CAPTION "Dynamic DSP: ReplayGain Scanner"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    DEFPUSHBUTTON   "Update File Tags",IDOK,341,229,68,14
-    PUSHBUTTON      "Cancel",IDCANCEL,413,229,50,14
-    CONTROL         "List1",IDC_LIST1,"SysListView32",LVS_REPORT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,4,4,459,220
-    LTEXT           "",IDC_STATIC1,4,235,233,8
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO
-BEGIN
-    IDD_SCANRESULT, DIALOG
-    BEGIN
-        LEFTMARGIN, 4
-        RIGHTMARGIN, 463
-        TOPMARGIN, 4
-        BOTTOMMARGIN, 243
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
-#endif    // German (Germany) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
 // English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
@@ -73,9 +27,20 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
+IDD_SCANRESULT DIALOGEX 0, 0, 469, 247
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Flex DSP: ReplayGain Scanner"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Update File Tags",IDOK,341,229,68,14
+    PUSHBUTTON      "Cancel",IDCANCEL,413,229,50,14
+    CONTROL         "List1",IDC_LIST1,"SysListView32",LVS_REPORT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,4,4,459,220
+    LTEXT           "",IDC_STATIC1,4,235,233,8
+END
+
 IDD_PERTRACKDSP DIALOGEX 0, 0, 377, 338
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Dynamic DSP"
+CAPTION "Flex DSP"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     PUSHBUTTON      "OK",IDOK,261,317,50,14
@@ -96,61 +61,6 @@ BEGIN
     GROUPBOX        "Additional settings",IDC_STATIC,228,133,141,178
     CONTROL         "Export setup on exit",IDC_CHECK_EXPORT_SETUP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,236,295,81,10
 END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO
-BEGIN
-    IDD_PERTRACKDSP, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 369
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 331
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Version
-//
-
-VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,1,1,3
- PRODUCTVERSION 0,0,0,0
- FILEFLAGSMASK 0x17L
-#ifdef _DEBUG
- FILEFLAGS 0x1L
-#else
- FILEFLAGS 0x0L
-#endif
- FILEOS 0x40004L
- FILETYPE 0x2L
- FILESUBTYPE 0x0L
-BEGIN
-    BLOCK "StringFileInfo"
-    BEGIN
-        BLOCK "040904e4"
-        BEGIN
-            VALUE "FileDescription", "Dynamic DSP plugin for Foobar 2000 (x86 64-bit by Dayuyu)"
-            VALUE "FileVersion", "2.1.1.3"
-            VALUE "LegalCopyright", "� Copyright 2020 hydrogenaud.io user Mario66"
-            VALUE "ProductVersion", "2.1.1.3"
-        END
-    END
-    BLOCK "VarFileInfo"
-    BEGIN
-        VALUE "Translation", 0x409, 1252
-    END
-END
-
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////

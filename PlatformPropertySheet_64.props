@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <FOO_COMPONENT_NAME>foo_dynamicdsp</FOO_COMPONENT_NAME>
+    <FOO_COMPONENT_NAME>foo_flex_dsp</FOO_COMPONENT_NAME>
     <FOO_CMD_DIR>C:\_MULTI\foobar2000.portable - v2_64</FOO_CMD_DIR>
     <FOO_CMD>$(FOO_CMD_DIR)\foobar2000.exe</FOO_CMD>
     <FOO_WORKING_DIR>$(FOO_CMD_DIR)</FOO_WORKING_DIR>
