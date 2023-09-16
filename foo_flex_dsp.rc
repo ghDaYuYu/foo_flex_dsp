@@ -55,12 +55,13 @@ BEGIN
     EDITTEXT        IDC_PREVIEW,7,110,292,14,ES_AUTOHSCROLL | ES_READONLY
     DEFPUSHBUTTON   "New chain",IDC_ADDCHAINBUTTON,121,317,41,14,WS_DISABLED
     EDITTEXT        IDC_NEWCHAINEDIT,7,317,111,14,ES_AUTOHSCROLL
-    CONTROL         "Enable evaluation to multiple chains\n(separated by semicolon)",IDC_CHECKMulti,
-                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,236,146,126,21
+    CONTROL         "Enable evaluation to multiple chains \n(separated by semicolon)",IDC_CHECKMulti,
+                    "Button",BS_AUTOCHECKBOX | BS_TOP | BS_MULTILINE | WS_TABSTOP,236,146,126,28
     DEFPUSHBUTTON   "Copy selected",IDC_COPYBUTTON,165,317,54,14,WS_DISABLED
     GROUPBOX        "Additional settings",IDC_STATIC,228,133,141,178
     CONTROL         "Export setup on exit",IDC_CHECK_EXPORT_SETUP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,236,295,81,10
 END
+
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -100,6 +101,21 @@ IDD_PERTRACKDSP AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_PERTRACKDSP, DIALOG
+    BEGIN
+    END
+END
+#endif    // APSTUDIO_INVOKED
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
