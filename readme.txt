@@ -16,7 +16,19 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 HISTORY and CREDITS:
 
-v2.1.1
+v2.1.1.3:
+Export/Import chain configurations.
+Fix 32/64 bits config compatibility.
+
+v2.1.1.2:
+Dark mode.
+Fix crash closing DynamicDsp Dialog while editing Chains Settings.
+
+v2.1.1.1 (released by da yuyu):
+Updated fb2k SDK 2023-05-10.
+Fix config parsing exception.
+
+v2.1.1:
 Quick fix for foobar2000 1.6 where dsp configurations did not show up. Limitation: You can not call this DSP from context menu "View" > "DSP" > "Dynamic DSP". Instead use the preference dialog only.
 
 v2.1:

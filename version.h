@@ -1,7 +1,7 @@
 #pragma once
 
 #define PLUGIN_NAME "Flex DSP"
-#define PLUGIN_UI_DESC "Switch dsp based on track metadata."
+#define PLUGIN_UI_DESC "Switch DSP based on track metadata."
 
 #define COMPONENT_VERSION_MAJOR 1
 #define COMPONENT_VERSION_MINOR 0
@@ -33,4 +33,3 @@
 #define COMPONENT_YEAR "2023"
 
 #define COMPONENT_NAME_DLL COMPONENT_NAME ".dll"
-#define PLUGIN_VERSION FOO_COMPONENT_VERSION

@@ -14,8 +14,8 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_DEFAULT
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,0
- PRODUCTVERSION 1,0,0,0
+ FILEVERSION DLL_VERSION_NUMERIC
+ PRODUCTVERSION DLL_VERSION_NUMERIC
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -31,13 +31,13 @@ BEGIN
         BLOCK "000904b0"
         BEGIN
             VALUE "CompanyName", "da yuyu"
-            VALUE "FileDescription", "A plugin for foobar2000 switch dsp based on track metadata"
-            VALUE "FileVersion", "1.0.0.0"
-            VALUE "InternalName", "foo_flex_dsp"
+            VALUE "FileDescription", "A plugin for foobar2000 to switch DSP based on track metadata"
+            VALUE "FileVersion", DLL_VERSION_STRING "\0"
+            VALUE "InternalName", COMPONENT_NAME
             VALUE "LegalCopyright", "MIT license. @ 2023 Da yuyu, @ 2020 hydrogenaud.io user ""Mario66"" "
-            VALUE "OriginalFilename", "foo_flex_dsp.dll"
-            VALUE "ProductName", "Flex DSP"
-            VALUE "ProductVersion", "1.0.0.0"
+            VALUE "OriginalFilename", COMPONENT_NAME_DLL
+            VALUE "ProductName", PLUGIN_NAME "\0"
+            VALUE "ProductVersion", DLL_VERSION_STRING "\0"
         END
     END
     BLOCK "VarFileInfo"
