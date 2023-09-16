@@ -451,7 +451,9 @@ class CMyDSPPopup : public CDialogImpl < CMyDSPPopup > {
   static void setCEditString8(CEdit* cedit, pfc::string8 text) {
     WCHAR str[MAX_PATTERN_LEN];
     ConvertString8(text, str, MAX_PATTERN_LEN - 1);
-    cedit->SetWindowTextW(str);
+    if (::IsWindow(cedit->m_hWnd)) {
+      cedit->SetWindowTextW(str);
+    }
   }
 
   void updatePreview() {
@@ -470,6 +472,7 @@ class CMyDSPPopup : public CDialogImpl < CMyDSPPopup > {
   }
 
   BOOL OnInitDialog(CWindow, LPARAM) {
+    m_hparent = ::GetActiveWindow();
     chainsList = GetDlgItem(IDC_CHAINSLIST);
     newChainEdit = GetDlgItem(IDC_NEWCHAINEDIT);
     titleformatEdit = GetDlgItem(IDC_TITLEFORMATEDIT);
@@ -598,7 +601,7 @@ class CMyDSPPopup : public CDialogImpl < CMyDSPPopup > {
       /* m_mthelper.add(this, name); */
       // Call dsp configuration in current thread (bugfix for fb 1.6)
       dsp_chain_config_impl *chain = chainsMap[ConvertWchar(str)];
-      static_api_ptr_t<dsp_config_manager>().get_ptr()->configure_popup(*chain, m_hWnd, name.toString());
+      static_api_ptr_t<dsp_config_manager>().get_ptr()->configure_popup(*chain, m_hparent, name.toString());
     }
   }
 
@@ -615,7 +618,9 @@ class CMyDSPPopup : public CDialogImpl < CMyDSPPopup > {
   pfc::string8 tfString;
   ChainsMap chainsMap;
   char separator;
-  /* callInMainThreadHelper m_mthelper; */
+
+  HWND m_hparent = nullptr;
+  //callInMainThreadHelper m_mthelper;
 
 public:
   
