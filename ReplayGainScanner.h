@@ -5,11 +5,6 @@
 
 #define DSP_PROCESS_AHEAD 5
 
-static const GUID guid_flexdsp_branch = { 0x91a0c22, 0xbea8, 0x4e1f, { 0x83, 0x44, 0x64, 0xc4, 0xd8, 0xe1, 0x63, 0xcb } };
-static const GUID guid_replaygain_branch = { 0xb20e1d64, 0xb4d3, 0x4170, { 0x90, 0x19, 0xc0, 0xb4, 0x4c, 0xe2, 0x9d, 0x1b } };
-static const GUID guid_cfg_album_pattern = { 0x1d9c04a3, 0xa6a7, 0x4b3b, { 0x89, 0x2f, 0xbf, 0xda, 0x37, 0x12, 0x87, 0xed } };
-static const GUID guid_cfg_thread_priority = { 0xfca161b5, 0xd53d, 0x460b, { 0x95, 0x45, 0xa9, 0xb0, 0xf7, 0x2a, 0x2c, 0x33 } };
-
 static const int thread_priority_levels[7] = { THREAD_PRIORITY_IDLE, THREAD_PRIORITY_LOWEST, THREAD_PRIORITY_BELOW_NORMAL, THREAD_PRIORITY_NORMAL, THREAD_PRIORITY_ABOVE_NORMAL, THREAD_PRIORITY_HIGHEST, THREAD_PRIORITY_TIME_CRITICAL };
 
 enum ScanMode {
@@ -53,7 +48,7 @@ private:
   Settings m_settings;
   ScanMode m_scanMode;
 
-  double output_duration = 0;
-  FILETIME start_time, end_time;
+  double m_output_duration = 0;
+  FILETIME m_start_time, m_end_time;
 };
 

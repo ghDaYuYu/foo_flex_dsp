@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "helpers/input_helpers.h"
+
+#include "guids.h"
 #include "ReplayGainResultPopup.h"
 #include "ReplayGainScanner.h"
 
@@ -65,7 +67,7 @@ void ReplayGainScanProcess::run(threaded_process_status & p_status, abort_callba
   try {
     SetThreadPriority(GetCurrentThread(), thread_priority_levels[m_settings.priority() - 1]);
     
-    GetSystemTimeAsFileTime(&start_time);
+    GetSystemTimeAsFileTime(&m_start_time);
 
     // tell the decoders that we won't seek and that we don't want looping on formats that support looping.
     const t_uint32 decode_flags = input_flag_no_seeking | input_flag_no_looping;
@@ -98,11 +100,11 @@ void ReplayGainScanProcess::run(threaded_process_status & p_status, abort_callba
             if (curGroup[track_i]->get_info_async(info)) length = info.get_length();
             else length = 0;
           }
-          output_duration += length;
+          m_output_duration += length;
           audio_chunk_impl_temporary l_chunk;
           replaygain_scanner::ptr scanner = static_api_ptr_t<replaygain_scanner_entry>()->instantiate();
-          dsp_manager manager;
-          manager.set_config(m_chain);
+          dsp_manager tmp_manager;
+          tmp_manager.set_config(m_chain);
           dsp_chunk_list_impl chunk_list;
           double decoded = 0;
           // MAIN DECODE LOOP
@@ -110,7 +112,7 @@ void ReplayGainScanProcess::run(threaded_process_status & p_status, abort_callba
             bool valid = input.run(l_chunk, p_abort);  // get next chunk
             if (valid) chunk_list.add_chunk(&l_chunk);
             if (chunk_list.get_count() >= DSP_PROCESS_AHEAD || !valid) {
-              manager.run(&chunk_list, curGroup[track_i], 0, p_abort);
+              tmp_manager.run(&chunk_list, curGroup[track_i], 0, p_abort);
               for (size_t chunk_i = 0; chunk_i < chunk_list.get_count(); chunk_i++) {
                 scanner->process_chunk(*(chunk_list.get_item(chunk_i)));
                 p_abort.check();
@@ -146,7 +148,7 @@ void ReplayGainScanProcess::run(threaded_process_status & p_status, abort_callba
       m_resultList.add_items(tmpResultList);
       tmpResultList.remove_all();
     }
-    GetSystemTimeAsFileTime(&end_time);
+    GetSystemTimeAsFileTime(&m_end_time);
   } catch (std::exception const & e) {
     m_failMsg = e.what();
   }
@@ -157,11 +159,11 @@ void ReplayGainScanProcess::on_done(HWND p_wnd, bool p_was_aborted) {
     if (!m_failMsg.is_empty()) {
       popup_message::g_complain("Flex DSP: ReplayGain Scanner - failure", m_failMsg);
     } else {
-      DWORD high = end_time.dwHighDateTime - start_time.dwHighDateTime;
-      DWORD low = end_time.dwLowDateTime - start_time.dwLowDateTime;
-      if (end_time.dwLowDateTime < start_time.dwLowDateTime) high--;
+      DWORD high = m_end_time.dwHighDateTime - m_start_time.dwHighDateTime;
+      DWORD low = m_end_time.dwLowDateTime - m_start_time.dwLowDateTime;
+      if (m_end_time.dwLowDateTime < m_start_time.dwLowDateTime) high--;
       unsigned __int64 timestamp = ((unsigned __int64)(high) << 32) + low;
-      CReplayGainResultPopup::RunResultPopup(m_resultList, output_duration, timestamp, core_api::get_main_window());
+      CReplayGainResultPopup::RunResultPopup(m_resultList, m_output_duration, timestamp, core_api::get_main_window());
     }
   }
 }

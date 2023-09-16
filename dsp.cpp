@@ -4,8 +4,10 @@
 #include <functional>
 #include <filesystem>
 #include <mmdeviceapi.h>
-//#include <endpointvolume.h>
 #include "libPPUI/wtl-pp.h"
+#include "version.h"
+#include "guids.h"
+//#include <endpointvolume.h>
 #include <Functiondiscoverykeys_devpkey.h>
 #include "helpers/DarkMode.h"
 
@@ -18,6 +20,12 @@
 typedef pfc::map_t<pfc::string8, dsp_chain_config_impl *, pfc::string::comparatorCaseInsensitive> ChainsMap;
 
 using namespace std::placeholders;
+
+advconfig_branch_factory cfg_flex_dsp_branch("Flex DSP", guid_flex_dsp_branch, advconfig_branch::guid_branch_tools, 0);
+advconfig_checkbox_factory cfg_log_enabled("Log DSP updates", guid_cfg_log_enabled, guid_flex_dsp_branch, false, 0);
+advconfig_branch_factory replaygain_branch("ReplayGain Scanner", guid_replaygain_branch, guid_flex_dsp_branch, 0);
+advconfig_string_factory cfg_album_pattern("Album grouping pattern", guid_cfg_album_pattern, guid_replaygain_branch, 0, "%album artist% | %date% | %album%");
+advconfig_integer_factory cfg_thread_priority("Thread priority (1-7)", guid_cfg_thread_priority, guid_replaygain_branch, 0, 2, 1, 7);
 
 static void RunDSPConfigPopup(const dsp_preset & p_data, HWND p_parent, dsp_preset_edit_callback & p_callback);
 
