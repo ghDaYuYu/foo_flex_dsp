@@ -42,7 +42,7 @@ void ConvertString8(const pfc::string8 orig, wchar_t * out, size_t max) {
   pfc::stringcvt::convert_utf8_to_wide(out, max, orig.get_ptr(), orig.length());
 }
 
-pfc::string8 GetDefaultPlaybackDevice()
+void GetDefaultPlaybackDevice(pfc::string8 &out)
 {
   HRESULT hr = NULL;
   bool decibels = false;
@@ -70,10 +70,10 @@ pfc::string8 GetDefaultPlaybackDevice()
   hr = pProps->GetValue(
     PKEY_Device_DeviceDesc, &varName);
 
-  return ConvertWchar(varName.pwszVal);
+  out = ConvertWchar(varName.pwszVal);
 }
 
-pfc::string8 ReplaceDevicePlaceholders(pfc::string8 pattern) {
+pfc::string8 ReplaceDevicePlaceholders(pfc::string8 pattern, audio_chunk* chunk, pfc::string8 &playback_device = pfc::string8()) {
   // Replace placeholders with output name and device
   static_api_ptr_t<output_manager> om;
   outputCoreConfig_t cfg;
@@ -84,32 +84,39 @@ pfc::string8 ReplaceDevicePlaceholders(pfc::string8 pattern) {
   auto output = pattern;
   output.replace_string("%output_type%", output_name.c_str());
   output.replace_string("%output_device_name%", device_name.c_str());
-  output.replace_string("%windows_output_device_name%", GetDefaultPlaybackDevice().c_str());
+  output.replace_string("%windows_output_device_name%", playback_device.c_str());
+
+  if (chunk) {
+    output.replace_string("%channels%", pfc::format_int(chunk->get_channel_count()).c_str());
+  }
+
   return output;
 }
 
 class MyDSP : public dsp_impl_base {
  public:
   MyDSP(){
-    curLatency = 0;
-    curDsp = pfc::string8("UNINITIALIZED");
+
+    m_curLatency = 0;
+    m_curDsp = pfc::string8("UNINITIALIZED");
   }
 
   MyDSP(dsp_preset const & in) {
-    parse_preset(&chainsMap, &titleformat, &separator, in);
+
+    parse_preset(&m_chainsMap, &m_titleformat, &m_separator, in);
     // Remove newline characters
     t_size pos = 0;
     while (true) {
-      pos = titleformat.find_first('\n', pos);
+      pos = m_titleformat.find_first('\n', pos);
       if (pos == ~0) break;
-      titleformat.remove_chars(pos, 1);
+      m_titleformat.remove_chars(pos, 1);
     }
-    curDsp = pfc::string8("UNINITIALIZED");
+    m_curDsp = pfc::string8("UNINITIALIZED");
   }
 
   ~MyDSP(){
     FreeMemory t;
-    chainsMap.enumerate(std::bind(&FreeMemory::Traverse, t, _1, _2));
+    m_chainsMap.enumerate(std::bind(&FreeMemory::Traverse, t, _1, _2));
   }
 
   static GUID g_get_guid() {
@@ -125,20 +132,20 @@ class MyDSP : public dsp_impl_base {
   void addChain(const dsp_chain_config_impl *chain) {
     if (chain != NULL) {
       for (size_t j = 0; j < chain->get_count(); j++) {
-        currentChain.add_item(chain->get_item(j));
+        m_currentChain.add_item(chain->get_item(j));
       }
     }
   }
 
   void updateCurrentChainForString(const pfc::string8& str) {
-    currentChain.remove_all();
-    if (separator == 0) {
-      addChain(chainsMap[str]);
+    m_currentChain.remove_all();
+    if (m_separator == 0) {
+      addChain(m_chainsMap[str]);
     } else {
       pfc::list_t<pfc::string_part_ref> splits;
-      pfc::splitStringSimple_toList(splits, separator, str.toString());
+      pfc::splitStringSimple_toList(splits, m_separator, str.toString());
       for (size_t i = 0; i < splits.get_count(); i++) {
-        dsp_chain_config_impl *subChain = chainsMap[pfc::string8(splits.get_item(i))];
+        dsp_chain_config_impl *subChain = m_chainsMap[pfc::string8(splits.get_item(i))];
         addChain(subChain);
       }
     }
@@ -148,47 +155,81 @@ class MyDSP : public dsp_impl_base {
     metadb_handle_ptr track;
     get_cur_file(track);
     dsp_chunk_list_impl outputChunks;
+    
+    pfc::string8 log_msg, log_dsp;
+    bool blog = cfg_log_enabled.get();
 
-    if (track != curTrack || chunk == NULL) { // this is a new track (or end of playlist needing flush)
+    if (track != m_curTrack || chunk == NULL) { // this is a new track (or end of playlist needing flush)
       pfc::string8 newDsp;
       // find out the chain name for this track
       if (track != NULL && chunk != NULL) {
-        auto titleformat_tmp = ReplaceDevicePlaceholders(titleformat);
-        static_api_ptr_t<titleformat_compiler>()->compile_safe(compiledTitleformat, titleformat_tmp);
-        track->format_title(NULL, newDsp, compiledTitleformat, 0);
+        GetDefaultPlaybackDevice(m_playback_device);
+        auto titleformat_rpl = ReplaceDevicePlaceholders(m_titleformat, chunk, m_playback_device);
+        static_api_ptr_t<titleformat_compiler>()->compile_safe(m_compiledTitleformat, titleformat_rpl);
+        track->format_title(NULL, newDsp, m_compiledTitleformat, 0);
       } else {
         newDsp = pfc::string8("");
       }
 
       // see if chain has changed since last file
-      if (curDsp != newDsp){
+      if (m_curDsp != newDsp){
         // new chain wanted, first flush out all the audio data still in the old dsp chain
-        if (currentChain.get_count() > 0){
+        bool bclosed = false;
+        if (m_currentChain.get_count() > 0){
           if (chunk != NULL){
             outputChunks.add_chunk(chunk);
           }
-          curLatency = manager.run(&outputChunks, curTrack, FLUSH, cb);
-          manager.flush();
+          m_curLatency = m_manager.run(&outputChunks, m_curTrack, FLUSH, cb);
+          m_manager.flush();
+          //todo: bool bexclisive_mode = get_exclusive();
+          if (true/*bexclusive_mode*/) {
+            m_manager.close();
+            bclosed = true;
+          }
           chunk = NULL;
         }
 
         //switch to new chain
-        curLatency = 0;
+        m_curLatency = 0;
         updateCurrentChainForString(newDsp);
-        if (currentChain.get_count() > 0){
-          manager.set_config(currentChain);
+        if (m_currentChain.get_count() > 0){
+          m_manager.set_config(m_currentChain);
+
+          if (bclosed/*bexclusive_mode*/ && outputChunks.get_count()) {
+            //re-run
+            m_curLatency = m_manager.run(&outputChunks, m_curTrack, FLUSH, cb);
+            m_manager.flush();
+            chunk = NULL;
+          }
+
+          if (blog) {
+            pfc::string8 buffer;
+            for (size_t w = 0; w < m_currentChain.get_count(); w++) {
+              if (w) buffer << ", ";
+              buffer << m_currentChain.get_dsp_name(w);
+            }
+            log_msg = PFC_string_formatter() << "Flex DSP: " << buffer << " [dsp:" << log_dsp << "]";
+          }
         }
-        curDsp = newDsp;
+        else {
+          if (blog) {
+            log_msg = "Flex DSP: Empty chain";
+          }
+        }
+        if (blog && log_msg.get_length()) {
+          FB2K_console_formatter() << log_msg;
+        }
+        m_curDsp = newDsp;
       }
-      curTrack = track;
+      m_curTrack = track;
     }
 
     // feed new chunk through our current selected dsp chain, if any
     if (chunk != NULL){
-      if (currentChain.get_count() > 0){
+      if (m_currentChain.get_count() > 0){
         dsp_chunk_list_impl list;
         list.add_chunk(chunk);
-        curLatency = manager.run(&list, curTrack, 0, cb);
+        m_curLatency = m_manager.run(&list, m_curTrack, 0, cb);
         for (size_t i = 0; i < list.get_count(); i++){
           outputChunks.add_chunk(list.get_item(i));
         }
@@ -222,12 +263,12 @@ class MyDSP : public dsp_impl_base {
   void flush() {
     // If you have any audio data buffered, you should drop it immediately and reset the DSP to a freshly initialized state.
     // Called after a seek etc.
-    manager.flush();
+    m_manager.flush();
   }
 
   double get_latency() {
     // If the DSP buffers some amount of audio data, it should return the duration of buffered data (in seconds) here.
-    return curLatency;
+    return m_curLatency;
   }
 
   bool need_track_change_mark() {
@@ -377,16 +418,17 @@ class MyDSP : public dsp_impl_base {
 
  private:
   //part of the preset
-  pfc::string8 titleformat;
-  ChainsMap chainsMap;
-  char separator;
+  pfc::string8 m_titleformat;
+  ChainsMap m_chainsMap;
+  char m_separator;
   //not part of the preset
-  service_ptr_t<titleformat_object> compiledTitleformat;
-  pfc::string8 curDsp;
-  dsp_chain_config_impl currentChain;
-  dsp_manager manager;
-  double curLatency;
-  metadb_handle_ptr curTrack;
+  service_ptr_t<titleformat_object> m_compiledTitleformat;
+  pfc::string8 m_curDsp;
+  dsp_chain_config_impl m_currentChain;
+  dsp_manager m_manager;
+  double m_curLatency;
+  pfc::string8 m_playback_device;
+  metadb_handle_ptr m_curTrack;
 };
 
 // Formats a given title format script depending on the current playback by calling playback_control::playback_format_title
@@ -395,9 +437,9 @@ struct query_titleformat_task : main_thread_callback
  public:
   virtual void callback_run() {
     titleformat_object::ptr script;
-    pfc::string8 pattern_tmp = ReplaceDevicePlaceholders(pattern);
+    pfc::string8 pattern_tmp = ReplaceDevicePlaceholders(pattern, nullptr);
     static_api_ptr_t<titleformat_compiler>()->compile_safe_ex(script, pattern_tmp);
-    static_api_ptr_t<playback_control> playback_control;
+
     pfc::string8 returnVal;
     if (playback_control->playback_format_title(NULL, returnVal, script, NULL, playback_control::display_level_all)) {
       onSuccess(returnVal);

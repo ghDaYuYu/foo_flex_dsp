@@ -5,11 +5,6 @@
 #include "ReplayGainResultPopup.h"
 #include "ReplayGainScanner.h"
 
-static advconfig_branch_factory dynamicdsp_branch("Flex DSP", guid_flexdsp_branch, advconfig_branch::guid_branch_tools, 0);
-static advconfig_branch_factory replaygain_branch("ReplayGain Scanner", guid_replaygain_branch, guid_flexdsp_branch, 0);
-static advconfig_string_factory cfg_album_pattern("Album grouping pattern", guid_cfg_album_pattern, guid_replaygain_branch, 0, "%album artist% | %date% | %album%");
-static advconfig_integer_factory cfg_thread_priority("Thread priority (1-7)", guid_cfg_thread_priority, guid_replaygain_branch, 0, 2, 1, 7);
-
 pfc::list_t<metadb_handle_list> ReplayGainScanProcess::createInputList() {
   if (m_scanMode == ScanMode::ALBUM_BY_TAGS) {
     metadb_handle_list input_files = m_items;
