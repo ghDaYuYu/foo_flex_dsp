@@ -13,7 +13,7 @@
 
 
 #define MAX_PRESENT_NAME_LEN 100
-#define MAX_PATTERN_LEN 1024
+#define MAX_PATTERN_LEN 4096
 #define DSP_DEFAULT_SEPARATOR ';'
 #define DSP_DEFAULT_TF "[%track_flexdsp%]"
 
