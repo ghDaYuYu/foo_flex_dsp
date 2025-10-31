@@ -288,7 +288,7 @@ class MyDSP : public dsp_impl_base {
   }
 
   static bool g_get_default_preset(dsp_preset & p_out) {
-    if (import_preset(nullptr, nullptr, nullptr, p_out)) {
+    if (import_preset(p_out)) {
       return true;
     }    
 
@@ -326,7 +326,7 @@ class MyDSP : public dsp_impl_base {
     return pfc::string8(path.c_str());
   }
 
-  static bool import_preset(ChainsMap* cMap, pfc::string8* tfString, char* separator, dsp_preset& out/*const dsp_preset& in*/) {
+  static bool import_preset(dsp_preset& out) {
     try {
       file_ptr l_file;
       std::error_code ec;
