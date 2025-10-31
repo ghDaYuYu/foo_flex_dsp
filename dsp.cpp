@@ -553,7 +553,25 @@ class CMyDSPPopup : public CDialogImpl < CMyDSPPopup > {
     }
   };
 
+  HWND find_dsp_popup(pfc::string8 chainname) {
+    pfc::string8 title = PFC_string_formatter() << "DSP Settings - " << chainname;
+    wchar_t str[MAX_PRESENT_NAME_LEN];
+    ConvertString8(title, str, MAX_PRESENT_NAME_LEN - 1);
+    return FindWindowEx(NULL,NULL, NULL, str);
+  }
+
+  void close_dsp_popups() {
+    for (auto c : chainsMap) {
+      while (HWND hchild = find_dsp_popup(c.m_key)) {
+        ::PostMessage(hchild, WM_CLOSE, 0, 0);
+        Sleep(2);
+        ::DestroyWindow(hchild);
+      }
+    }
+  }
+  
   void OnOKButton(UINT, int id, CWindow) {
+    close_dsp_popups()
     WCHAR str[MAX_PATTERN_LEN];
     titleformatEdit.GetWindowTextW(str, MAX_PATTERN_LEN - 1);
     tfString = ConvertWchar(str);
@@ -566,13 +584,14 @@ class CMyDSPPopup : public CDialogImpl < CMyDSPPopup > {
     if (uButton_GetCheck(m_hWnd, IDC_CHECK_EXPORT_SETUP)) {
       MyDSP::export_preset(chainsMap, tfString, separator, preset);
     }
-    
+
     MyDSP::FreeMemory t;
     chainsMap.enumerate(std::bind(&MyDSP::FreeMemory::Traverse, t, _1, _2));
     EndDialog(id);
   }
 
   void OnCancelButton(UINT, int id, CWindow) {
+    close_dsp_popups()
     MyDSP::FreeMemory t;
     chainsMap.enumerate(std::bind(&MyDSP::FreeMemory::Traverse, t, _1, _2));
     EndDialog(id);
@@ -649,11 +668,15 @@ class CMyDSPPopup : public CDialogImpl < CMyDSPPopup > {
       WCHAR str[MAX_PRESENT_NAME_LEN];
       chainsList.GetText(selectedItem, str);
       pfc::string8 name = ConvertWchar(str);
-      // Call dsp configuration popup in main thread
-      /* m_mthelper.add(this, name); */
+
       // Call dsp configuration in current thread (bugfix for fb 1.6)
-      dsp_chain_config_impl *chain = chainsMap[ConvertWchar(str)];
-      static_api_ptr_t<dsp_config_manager>().get_ptr()->configure_popup(*chain, m_hparent, name.toString());
+      if (HWND hpopup = find_dsp_popup(name)) {
+        ::SetFocus(hpopup);
+      }
+      else {
+        dsp_chain_config_impl *chain = chainsMap[ConvertWchar(str)];
+        static_api_ptr_t<dsp_config_manager>().get_ptr()->configure_popup(*chain, m_hparent, name.toString());
+      }
     }
   }
 
