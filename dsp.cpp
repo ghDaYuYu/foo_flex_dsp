@@ -257,7 +257,17 @@ class MyDSP : public dsp_impl_base {
   void on_endoftrack(abort_callback & cb) {
     // Should do nothing except for special cases where your DSP performs special operations when changing tracks.
     // If this function does anything, you must change need_track_change_mark() to return true.
-    // If you have pending audio data that you wish to output, you can use insert_chunk() to do so.    
+    // If you have pending audio data that you wish to output, you can use insert_chunk() to do so. 
+    if (m_currentChain.get_count() > 0) {
+      dsp_chunk_list_impl outputChunks;
+      m_curLatency = m_manager.run(&outputChunks, m_curTrack, END_OF_TRACK, cb);
+      // throw all output chunks at the framework
+      // (original chunk always discarded)
+      for (size_t i = 0; i < outputChunks.get_count(); i++) {
+          audio_chunk* newChunk = insert_chunk();
+          *newChunk = *(outputChunks.get_item(i));
+      }
+    }
   }
 
   void flush() {
@@ -274,11 +284,11 @@ class MyDSP : public dsp_impl_base {
   bool need_track_change_mark() {
     // Return true if you need on_endoftrack() or need to accurately know which track we're currently processing
     // WARNING: If you return true, the DSP manager will fire on_endofplayback() at DSPs that are before us in the chain on track change to ensure that we get an accurate mark, so use it only when needed.
-    return false;
+    return m_manager.need_track_change_mark();
   }
 
   static bool g_get_default_preset(dsp_preset & p_out) {
-    if (import_preset(p_out)) {
+    if (import_preset(nullptr, nullptr, nullptr, p_out)) {
       return true;
     }    
 
@@ -441,7 +451,7 @@ struct query_titleformat_task : main_thread_callback
     static_api_ptr_t<titleformat_compiler>()->compile_safe_ex(script, pattern_tmp);
 
     pfc::string8 returnVal;
-    if (playback_control->playback_format_title(NULL, returnVal, script, NULL, playback_control::display_level_all)) {
+    if (playback_control::get()->playback_format_title(NULL, returnVal, script, NULL, playback_control::display_level_all)) {
       onSuccess(returnVal);
     } else {
       onFailure();
